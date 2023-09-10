@@ -1,0 +1,46 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'library.json'
+      - '*.lua'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        path: OmiLib
+    - name: Checkout luabun
+      uses: actions/checkout@v4
+      with:
+        path: luabun
+        repository: omarkmu/luabun
+    - name: Install luabun
+      run: cd luabun && npm i && cd ..
+    - name: Build bundle
+      run: node luabun create OmiLib --all
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set up Lua 5.1
+      uses: leafo/gh-actions-lua@v10
+      with:
+        luaVersion: '5.1.5'
+    - name: Run tests
+      working-directory: '.'
+      env:
+        LUA_PATH: ./?.lua;./src/?.lua
+      run: lua RunTests.lua

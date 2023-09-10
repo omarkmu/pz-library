@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/omarkmu/luabun/main/luabun.schema.json",
+  "name": "OmiLib",
+  "version": "1.0.0",
+  "luaDirectory": "src",
+  "defaultModules": ["class", "sandbox", "utils"],
+  "before": [
+    "---@class omi.Result<T>: { success: boolean, value: T?, error: string? }\n",
+    "---@class omi.lib"
+  ],
+  "modules": {
+    "class": {
+      "require": "class",
+      "before": "---@type omi.class | (fun(cls: table?): omi.Class)"
+    },
+    "sandbox": {
+      "require": "sandbox",
+      "before": "---@type omi.sandbox | (fun(tableName: string): omi.Sandbox)"
+    },
+    "fmt": {
+      "require": "fmt",
+      "before": "---@type omi.fmt"
+    },
+    "interpolate": {
+      "require": "interpolate",
+      "before": "---@type omi.interpolate | (fun(text: string, tokens: table?, options: omi.interpolate.Options?): string)"
+    },
+    "utils": {
+      "require": "utils",
+      "before": "---@type omi.utils"
+    },
+    "test": {
+      "require": "test",
+      "before": "---@type omi.test"
+    }
+  }
+}
