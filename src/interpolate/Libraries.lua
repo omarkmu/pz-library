@@ -514,6 +514,22 @@ functions.map = {
         return o:last()
     end,
     ---@param interpolator omi.interpolate.Interpolator
+    has = function(interpolator, o, k)
+        if not o or not utils.isinstance(o, MultiMap) then
+            return
+        end
+
+        return o:has(k)
+    end,
+    ---@param interpolator omi.interpolate.Interpolator
+    get = function(interpolator, o, k, d)
+        if not o or not utils.isinstance(o, MultiMap) then
+            return
+        end
+
+        return o:get(k, d)
+    end,
+    ---@param interpolator omi.interpolate.Interpolator
     index = function(interpolator, o, i, d)
         if not utils.isinstance(o, MultiMap) then
             return functions.string.index(interpolator, o, i, d)
