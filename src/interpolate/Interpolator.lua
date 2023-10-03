@@ -19,6 +19,7 @@ local NodeType = InterpolationParser.NodeType
 ---@field protected _allowTokens boolean
 ---@field protected _allowMultiMaps boolean
 ---@field protected _allowFunctions boolean
+---@field protected _allowCharacterEntities boolean
 ---@field protected _requireCustomTokenUnderscore boolean
 ---@field protected _parser omi.interpolate.Parser
 ---@field protected _rand Random?
@@ -30,8 +31,9 @@ Interpolator.Libraries = InterpolatorLibraries
 ---@class omi.interpolate.Options
 ---@field pattern string? The initial format string of the interpolator.
 ---@field allowTokens boolean? Whether tokens should be interpreted. If false, tokens will be treated as text.
----@field allowMultiMaps boolean? Whether at-maps should be interpreted. If false, they are ignored.
----@field allowFunctions boolean? Whether functions should be interpreted. If false, they are ignored.
+---@field allowCharacterEntities boolean? Whether character entities should be interpreted. If false, they will be treated as text.
+---@field allowMultiMaps boolean? Whether at-maps should be interpreted. If false, they will be treated as text.
+---@field allowFunctions boolean? Whether functions should be interpreted. If false, they will be treated as text.
 ---@field requireCustomTokenUnderscore boolean? Whether custom tokens should require a leading underscore.
 ---@field libraryInclude table<string, boolean>? Set of library functions or modules to allow. If absent, all will be allowed.
 ---@field libraryExclude table<string, boolean>? Set of library functions or modules to exclude. If absent, none will be excluded.
@@ -357,7 +359,8 @@ function Interpolator:createParser(pattern)
     return InterpolationParser:new(pattern, {
         allowTokens = self._allowTokens,
         allowFunctions = self._allowFunctions,
-        allowAtExpressions = self._allowMultiMaps
+        allowAtExpressions = self._allowMultiMaps,
+        allowCharacterEntities = self._allowCharacterEntities,
     })
 end
 
@@ -377,6 +380,7 @@ function Interpolator:new(options)
     this._allowTokens = utils.default(options.allowTokens, true)
     this._allowMultiMaps = utils.default(options.allowMultiMaps, true)
     this._allowFunctions = utils.default(options.allowFunctions, true)
+    this._allowCharacterEntities = utils.default(options.allowCharacterEntities, true)
     this._requireCustomTokenUnderscore = utils.default(options.requireCustomTokenUnderscore, true)
 
     this:loadLibraries(options.libraryInclude, options.libraryExclude)

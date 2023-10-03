@@ -85,6 +85,18 @@ function InterpolatorTest:testAllowFunctions()
     self:assertInterpolateMatch('$upper(x)', 'f(x)', { upper = 'f'}, { allowFunctions = false })
 end
 
+---Tests the `allowCharacterEntities` option.
+function InterpolatorTest:testAllowCharacterEntities()
+    -- default → allow entities
+    self:assertInterpolateMatch('&#255;', string.char(255))
+
+    -- true → allow entities
+    self:assertInterpolateMatch('&#255;', string.char(255), nil, { allowCharacterEntities = true })
+
+    -- false → treat as text
+    self:assertInterpolateMatch('&#255;', '&#255;', nil, { allowCharacterEntities = false })
+end
+
 ---Tests the `requireCustomTokenUnderscore` option.
 function InterpolatorTest:testRequireCustomTokenUnderscore()
     -- default → require underscore
@@ -96,7 +108,6 @@ function InterpolatorTest:testRequireCustomTokenUnderscore()
     -- false → don't require underscore
     self:assertInterpolateMatch('$set(token 1)$token', '1', nil, { requireCustomTokenUnderscore = false })
 end
-
 
 generateTests {
     -- text
@@ -117,6 +128,13 @@ generateTests {
     { '$TOKEN',         '',       },
     { '$$token',        '$token', },
     { '$token$other',   'values', },
+
+    -- character entities
+    { '&#255;',      string.char(255) },
+    { '&laquo;',     string.char(171) },
+    { '&Laquo;',     '&Laquo;'        },
+    { '$len(hello&#32;world)', '11'   },
+    { '&unknown;',   '&unknown;'      },
 
     --#region at-maps
     { '@()',            ''            },

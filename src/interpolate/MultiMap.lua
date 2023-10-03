@@ -101,9 +101,22 @@ function MultiMap:has(key)
     return self._map[key] ~= nil
 end
 
+---Gets the first value associated with a key.
+---@param key unknown The key to query.
+---@param default unknown? A default value to return if there are no entries associated with the key.
+---@return unknown?
+function MultiMap:get(key, default)
+    local list = self._map[key]
+    if not list then
+        return default
+    end
+
+    return list[1].value
+end
+
 ---Gets a MultiMap of entries associated with a key.
 ---@param key unknown The key to query.
----@param default unknown? A default value to return if there is no nth value.
+---@param default unknown? A default value to return if there are no entries associated with the key.
 ---@return unknown?
 function MultiMap:index(key, default)
     if not self:has(key) then

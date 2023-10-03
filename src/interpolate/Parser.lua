@@ -6,6 +6,7 @@ local utils = require 'utils'
 ---@field protected _allowTokens boolean
 ---@field protected _allowAtExpr boolean
 ---@field protected _allowFunctions boolean
+---@field protected _allowCharEntities boolean
 local InterpolationParser = BaseParser:derive()
 
 
@@ -13,6 +14,7 @@ local InterpolationParser = BaseParser:derive()
 ---@field allowTokens boolean?
 ---@field allowFunctions boolean?
 ---@field allowAtExpressions boolean?
+---@field allowCharacterEntities boolean?
 
 
 ---@enum omi.interpolate.NodeType
@@ -64,13 +66,13 @@ local NodeType = InterpolationParser.NodeType
 
 -- text patterns for node types
 local TEXT_PATTERNS = {
-    -- $ = token/escape/call start, space = delimiter, ( = string start, ) = call end
-    [NodeType.argument] = '^([^ $()]+)[ $()]?',
-    -- $ = token/escape/call start, @ = at-expression start, ; = delim, : = delimiter, ( = string start, ) = expression end
-    [NodeType.at_key] = '^([^:;$@()]+)[:;$@()]?',
-    [NodeType.at_value] = '^([^:;$@()]+)[:;$@()]?',
+    -- $ = token/escape/call start, space = delimiter, ( = string start, ) = call end, & = entity start
+    [NodeType.argument] = ' $%(%)&',
+    -- $ = token/escape/call start, @ = at-expression start, ; = delim, : = delimiter, ( = string start, ) = expression end, & = entity start
+    [NodeType.at_key] = ':;$@%(%)&',
+    [NodeType.at_value] = ':;$@%(%)&',
     -- $ = escape start, ) = string end
-    [NodeType.string] = '^([^$)]+)[$)]?',
+    [NodeType.string] = '$%)',
 }
 
 local SPECIAL = {
@@ -80,6 +82,7 @@ local SPECIAL = {
     [';'] = true,
     ['('] = true,
     [')'] = true,
+    ['&'] = true,
 }
 
 ---Returns a table with consecutive text nodes merged.
@@ -216,18 +219,23 @@ postprocessNode = function(node)
 end
 
 
+---@protected
+---Gets the value of a named or numeric entity.
+---@protected
+---@param entity string
+function InterpolationParser:getEntityValue(entity)
+    return utils.getEntityValue(entity) or entity
+end
+
 ---Gets the pattern for text nodes given the current node type.
 ---@return string
 ---@protected
 function InterpolationParser:getTextPattern()
     local type = self._node and self._node.type
 
-    if TEXT_PATTERNS[type] then
-        return TEXT_PATTERNS[type]
-    end
-
-    -- $ = token/escape/call start, @ = at-expression start
-    return '^([^$@]+)[$@]?'
+    -- $ = token/escape/call start, @ = at-expression start, & = entity start
+    local patt = TEXT_PATTERNS[type] or '$@&'
+    return string.format('^([^%s])[%s]?', patt, patt)
 end
 
 ---Reads space characters and returns a literal string of spaces.
@@ -247,7 +255,7 @@ end
 ---@return omi.fmt.ParseTreeNode?
 ---@protected
 function InterpolationParser:readEscape()
-    local value = self._text:match('^$([$@();:])', self:pos())
+    local value = self._text:match('^$([$@();:&])', self:pos())
     if not value then
         return
     end
@@ -346,6 +354,35 @@ function InterpolationParser:readVariable()
     end
 
     local node = self:createNode(NodeType.token, { value = name })
+    self:setNodeEnd(node, pos - 1)
+    self:pos(pos)
+
+    return self:addNode(node)
+end
+
+---Reads a character entity (e.g., `&#171;`)
+---@return omi.fmt.ParseTreeNode?
+---@protected
+function InterpolationParser:readCharacterEntity()
+    if not self._allowCharEntities then
+        return
+    end
+
+    local entity, pos = self._text:match('^(&#x?%d+;)()', self:pos())
+
+    if not entity then
+        entity, pos = self._text:match('^(&%a+;)()', self:pos())
+        if not entity then
+            return
+        end
+    end
+
+    local value = self:getEntityValue(entity)
+    if not value then
+        return
+    end
+
+    local node = self:createNode(NodeType.text, { value = value })
     self:setNodeEnd(node, pos - 1)
     self:pos(pos)
 
@@ -532,6 +569,7 @@ function InterpolationParser:readExpression()
         or self:readFunction()
         or self:readVariable()
         or self:readAtExpression()
+        or self:readCharacterEntity()
         or self:readText()
         or self:readSpecialText()
 end
@@ -568,6 +606,7 @@ function InterpolationParser:new(text, options)
     this._allowTokens = utils.default(options.allowTokens, true)
     this._allowAtExpr = utils.default(options.allowAtExpressions, true)
     this._allowFunctions = utils.default(options.allowFunctions, true)
+    this._allowCharEntities = utils.default(options.allowCharacterEntities, true)
 
     return this
 end
