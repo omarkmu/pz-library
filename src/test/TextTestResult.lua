@@ -96,7 +96,8 @@ function TextTestResult:_printErrorList(errType, list)
 
     self:_print(self._fullSep)
 
-    for _, err in ipairs(list) do
+    for i = 1, #list do
+        local err = list[i]
         self:_printf('%s: %s', errType, err.func and self:_formatFunctionName(err.func) or '')
         self:_print(self._thinSep)
         self:_print(err.formattedError)

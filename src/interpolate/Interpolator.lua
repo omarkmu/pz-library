@@ -92,8 +92,8 @@ function Interpolator:evaluateNodeArray(nodes)
     end
 
     local parts = {}
-    for _, child in ipairs(nodes) do
-        self:evaluateNode(child, parts)
+    for i = 1, #nodes do
+        self:evaluateNode(nodes[i], parts)
     end
 
     return mergeParts(parts)
@@ -110,7 +110,8 @@ function Interpolator:evaluateAtExpression(node)
 
     ---@type omi.interpolate.entry[]
     local entries = {}
-    for _, e in ipairs(node.entries) do
+    for i = 1, #node.entries do
+        local e = node.entries[i]
         local key = self:evaluateNodeArray(e.key)
         local value = self:evaluateNodeArray(e.value)
 
@@ -155,11 +156,12 @@ end
 function Interpolator:evaluateCallNode(node)
     local args = {}
 
-    for i, argument in ipairs(node.args) do
+    for i = 1, #node.args do
+        local argument = node.args[i]
         local parts = {}
 
-        for _, child in ipairs(argument) do
-            self:evaluateNode(child, parts)
+        for j = 1, #argument do
+            self:evaluateNode(argument[j], parts)
         end
 
         args[i] = self:convert(mergeParts(parts))
@@ -247,8 +249,8 @@ function Interpolator:interpolateRaw(tokens)
     end
 
     local parts = {}
-    for _, node in ipairs(self._built) do
-        self:evaluateNode(node, parts)
+    for i = 1, #self._built do
+        self:evaluateNode(self._built[i], parts)
     end
 
     return mergeParts(parts)

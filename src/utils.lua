@@ -13,8 +13,8 @@ local submodules = {
     require('utils/type'),
 }
 
-for _, mod in ipairs(submodules) do
-    for k, v in pairs(mod) do
+for i = 1, #submodules do
+    for k, v in pairs(submodules[i]) do
         utils[k] = v
     end
 end

@@ -587,7 +587,8 @@ function libraries:load(include, exclude)
 
     local result = {}
 
-    for _, lib in ipairs(self.list) do
+    for i = 1, #self.list do
+        local lib = self.list[i]
         if (not include or include[lib]) and not exclude[lib] then
             local funcs = libraries.functions[lib]
             for k, func in pairs(funcs) do

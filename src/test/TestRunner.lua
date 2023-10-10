@@ -177,7 +177,8 @@ function TestRunner:runTestCase(testCase, result)
         skipTests = true
     end
 
-    for _, rec in ipairs(testCase.tests) do
+    for i = 1, #testCase.tests do
+        local rec = testCase.tests[i]
         result:startTest(rec)
 
         if skipTests then
@@ -229,8 +230,8 @@ function TestRunner:runTests(suite, options)
     )
 
     if success and #records > 0 then
-        for _, rec in ipairs(records) do
-            self:runTestCase(rec, result)
+        for i = 1, #records do
+            self:runTestCase(records[i], result)
         end
     end
 
