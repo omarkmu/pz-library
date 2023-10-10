@@ -54,6 +54,7 @@ local function escape_char(c)
 end
 
 
+---@diagnostic disable-next-line: unused-local
 local function encode_nil(val)
   return "null"
 end
@@ -81,8 +82,8 @@ local function encode_table(val, stack)
       error("invalid table: sparse array")
     end
     -- Encode
-    for i, v in ipairs(val) do
-      table.insert(res, encode(v, stack))
+    for i = 1, #val do
+      table.insert(res, encode(val[i], stack))
     end
     stack[val] = nil
     return "[" .. table.concat(res, ",") .. "]"

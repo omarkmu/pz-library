@@ -13,12 +13,11 @@ local utils = {}
 ---@param t1 unknown
 ---@param t2 unknown
 ---@param seen table<table, boolean>
+---@return boolean
 deepEquals = function(t1, t2, seen)
-    if t1 == t2 then
-        return true
-    end
-
-    if type(t1) ~= 'table' or type(t1) ~= type(t2) then
+    if type(t1) ~= 'table' then
+        return t1 == t2
+    elseif type(t1) ~= type(t2) then
         return false
     end
 

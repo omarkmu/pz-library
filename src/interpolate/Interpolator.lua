@@ -275,6 +275,7 @@ end
 
 ---Converts a value to a boolean using interpolator logic.
 ---@param value unknown
+---@return boolean
 function Interpolator:toBoolean(value)
     if utils.isinstance(value, MultiMap) then
         value = tostring(value)

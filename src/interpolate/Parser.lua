@@ -219,10 +219,10 @@ postprocessNode = function(node)
 end
 
 
----@protected
 ---Gets the value of a named or numeric entity.
----@protected
 ---@param entity string
+---@return string
+---@protected
 function InterpolationParser:getEntityValue(entity)
     return utils.getEntityValue(entity) or entity
 end

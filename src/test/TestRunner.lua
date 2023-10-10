@@ -215,8 +215,8 @@ end
 ---Runs a test suite or test case.
 ---@param suite omi.test.TestSuite
 ---@param options omi.test.RunOptions
+---@return omi.test.TestResult
 function TestRunner:runTests(suite, options)
-    ---@type omi.test.TestResult
     local result = self:makeResult(options)
 
     local endTime

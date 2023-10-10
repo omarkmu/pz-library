@@ -96,6 +96,7 @@ end
 
 ---Called when a test is about to be run.
 ---@param func omi.test.FunctionRecord
+---@diagnostic disable-next-line: unused-local
 function TestResult:startTest(func)
     self._inTest = true
     self.testsRun = self.testsRun + 1
@@ -103,6 +104,7 @@ end
 
 ---Called when a test has run.
 ---@param func omi.test.FunctionRecord
+---@diagnostic disable-next-line: unused-local
 function TestResult:stopTest(func)
     self._inTest = false
 end
@@ -112,6 +114,7 @@ function TestResult:startTestRun() end
 
 ---Called once after all tests have run.
 ---@param duration number? The time the tests took in seconds.
+---@diagnostic disable-next-line: unused-local
 function TestResult:stopTestRun(duration) end
 
 ---Returns `true` if the test had any failures or errors.

@@ -99,6 +99,7 @@ end
 
 ---Gets or sets the current pointer position.
 ---@param value integer?
+---@return integer
 ---@protected
 function Parser:pos(value)
     if value then

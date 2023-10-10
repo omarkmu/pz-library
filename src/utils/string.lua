@@ -107,8 +107,9 @@ local iso8859Entities = {
 }
 
 
----Tests if a table is empty or has only keys from 1 to #t.
+---Tests if a table is empty or has only keys from `1` to `#t`.
 ---@param t table
+---@return boolean
 local function isArray(t)
     local i = 0
     for _ in pairs(t) do
@@ -309,6 +310,7 @@ end
 ---@param value unknown
 ---@param pretty boolean? If true, tables will include newlines and tabs.
 ---@param maxDepth number? Maximum table depth. Defaults to 5.
+---@return string
 function utils.stringify(value, pretty, maxDepth)
     if type(value) ~= 'table' then
         return tostring(value)
