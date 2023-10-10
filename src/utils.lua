@@ -3,6 +3,10 @@
 local utils = {}
 
 
+---@type omi.utils.json
+utils.json = require('utils/json')
+
+
 local submodules = {
     require('utils/string'),
     require('utils/table'),
