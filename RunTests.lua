@@ -4,5 +4,5 @@ if test.isMain() then
     test.run({
         require('tests/InterpolatorTest'),
         require('tests/TableUtilsTest'),
-    }, { args = { ... }})
+    }, { args = { ... } })
 end

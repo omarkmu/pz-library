@@ -38,7 +38,7 @@ end
 ---@return omi.test.SuccessRecord
 function TestResult:addSuccess(func)
     local success = {
-        func = func
+        func = func,
     }
 
     self.successes[#self.successes + 1] = success
@@ -87,7 +87,7 @@ function TestResult:addFail(func, failure, traceback)
     local fail = {
         func = func,
         failure = failure,
-        formattedError = self:formatFailure(failure, traceback)
+        formattedError = self:formatFailure(failure, traceback),
     }
 
     self.failures[#self.failures + 1] = fail

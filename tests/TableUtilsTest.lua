@@ -15,9 +15,9 @@ local add = function(x, y) return x + y end
 
 local _0 = { 0, 0, 0 }
 local n01 = { 0, -1 }
-local p01 = { 0,  1 }
+local p01 = { 0, 1 }
 local n12 = { -1, -2 }
-local p12 = {  1,  2 }
+local p12 = { 1, 2 }
 
 
 ---Tests `utils.all` with tables.
@@ -107,16 +107,16 @@ end
 ---Tests `utils.concat`.
 function TableUtilsTest:testConcat()
     self:assertEqual(utils.concat({}), '')
-    self:assertEqual(utils.concat({1, 2, 3, 'a'}), '123a')
-    self:assertEqual(utils.concat({'hello'}), 'hello')
+    self:assertEqual(utils.concat({ 1, 2, 3, 'a' }), '123a')
+    self:assertEqual(utils.concat({ 'hello' }), 'hello')
 end
 
 ---Tests `utils.copy`.
 function TableUtilsTest:testCopy()
     -- copies are equal
     self:assertEqual(utils.copy({}), {})
-    self:assertEqual(utils.copy({{}}), {{}})
-    self:assertEqual(utils.copy({1, 2, 3}), {1, 2, 3})
+    self:assertEqual(utils.copy({ {} }), { {} })
+    self:assertEqual(utils.copy({ 1, 2, 3 }), { 1, 2, 3 })
 
     -- copies are not reference equal
     self:assertFalse(utils.copy({}) == {})
@@ -131,35 +131,35 @@ end
 ---Tests `utils.map`.
 function TableUtilsTest:testMap()
     -- works as expected with numeric keys
-    self:assertEqual(utils.pack(utils.map(increment, _0)), {1, 1, 1})
+    self:assertEqual(utils.pack(utils.map(increment, _0)), { 1, 1, 1 })
 
     -- works as expected with non-numeric keys
-    self:assertEqual(utils.pack(utils.map(increment, {a = 0})), {a = 1})
+    self:assertEqual(utils.pack(utils.map(increment, { a = 0 })), { a = 1 })
 end
 
 ---Tests `utils.mapList`.
 function TableUtilsTest:testMapList()
     -- works as expected with numeric keys
-    self:assertEqual(utils.pack(utils.mapList(increment, _0)), {1, 1, 1})
+    self:assertEqual(utils.pack(utils.mapList(increment, _0)), { 1, 1, 1 })
 
     -- works as expected with non-numeric keys
-    self:assertEqual(utils.pack(utils.mapList(increment, {a = 0, 1})), {2})
+    self:assertEqual(utils.pack(utils.mapList(increment, { a = 0, 1 })), { 2 })
 end
 
 ---Tests `utils.pack`.
 function TableUtilsTest:testPack()
-    self:assertEqual(utils.pack(ipairs({1, 2, 3})), {1, 2, 3})
+    self:assertEqual(utils.pack(ipairs({ 1, 2, 3 })), { 1, 2, 3 })
 end
 
 ---Tests `utils.reduce` and `utils.reduceList`.
 function TableUtilsTest:testReduce()
     -- reduce works as expected
-    self:assertEqual(utils.reduce(add, 0, {1, 2, 3}), 6)
-    self:assertEqual(utils.reduce(add, -6, {a=1, b=2, c=3}), 0)
+    self:assertEqual(utils.reduce(add, 0, { 1, 2, 3 }), 6)
+    self:assertEqual(utils.reduce(add, -6, { a = 1, b = 2, c = 3 }), 0)
 
     -- reduceList works as expected
-    self:assertEqual(utils.reduceList(add, 0, {1, 2, 3, a = 6, [5] = 10}), 6)
-    self:assertEqual(utils.reduceList(add, -6, {1, 2, 3, a = 100}), 0)
+    self:assertEqual(utils.reduceList(add, 0, { 1, 2, 3, a = 6, [5] = 10 }), 6)
+    self:assertEqual(utils.reduceList(add, -6, { 1, 2, 3, a = 100 }), 0)
 end
 
 return TableUtilsTest

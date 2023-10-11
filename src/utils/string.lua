@@ -170,38 +170,39 @@ local function stringifyTable(t, seen, pretty, depth, maxDepth)
 
     for k, v in iter(t) do
         if not isFirst then
-            result[#result+1] = ','
-            result[#result+1] = space
+            result[#result + 1] = ','
+            result[#result + 1] = space
         end
 
         isFirst = false
 
-        result[#result+1] = tab
+        result[#result + 1] = tab
 
         if not isNumeric then
-            result[#result+1] = '['
+            result[#result + 1] = '['
             if type(k) == 'table' then
                 -- don't show table keys
-                result[#result+1] = '{...}'
+                result[#result + 1] = '{...}'
             else
-                result[#result+1] = stringifyPrimitive(k)
+                result[#result + 1] = stringifyPrimitive(k)
             end
 
-            result[#result+1] = keyEnd
+            result[#result + 1] = keyEnd
         end
 
         if type(v) == 'table' then
-            result[#result+1] = stringifyTable(v, seen, pretty, depth + 1, maxDepth)
+            result[#result + 1] = stringifyTable(v, seen, pretty, depth + 1, maxDepth)
         else
-            result[#result+1] = stringifyPrimitive(v)
+            result[#result + 1] = stringifyPrimitive(v)
         end
     end
 
-    result[#result+1] = pretty and (space .. string.rep('    ', depth - 1)) or space
-    result[#result+1] = '}'
+    result[#result + 1] = pretty and (space .. string.rep('    ', depth - 1)) or space
+    result[#result + 1] = '}'
 
     return table.concat(result)
 end
+
 
 ---Returns text that's safe for use in a pattern.
 ---@param text string
@@ -301,7 +302,8 @@ function utils.endsWith(text, other)
         return true
     end
 
-    return text:sub(-#other) == other
+    local len = #other
+    return text:sub(-len) == other
 end
 
 ---Stringifies a value for display.

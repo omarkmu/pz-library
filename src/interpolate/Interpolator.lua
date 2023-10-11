@@ -1,5 +1,5 @@
 local table = table
-local unpack = unpack or table.unpack
+local unpack = unpack or table.unpack ---@diagnostic disable-line: deprecated
 local newrandom = newrandom
 local class = require 'class'
 local utils = require 'utils'

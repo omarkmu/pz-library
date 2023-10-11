@@ -142,13 +142,15 @@ function TextTestResult:stopTestRun(duration)
     local details = {}
 
     if #self.failures > 0 then
-        details[#details+1] = format('failures=%d', #self.failures)
+        details[#details + 1] = format('failures=%d', #self.failures)
     end
+
     if #self.errors > 0 then
-        details[#details+1] = format('errors=%d', #self.errors)
+        details[#details + 1] = format('errors=%d', #self.errors)
     end
+
     if #self.skipped > 0 then
-        details[#details+1] = format('skipped=%d', #self.skipped)
+        details[#details + 1] = format('skipped=%d', #self.skipped)
     end
 
     if #details > 0 then

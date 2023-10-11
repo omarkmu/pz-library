@@ -103,7 +103,7 @@ local function mergeTextNodes(tab)
             else
                 last = {
                     type = NodeType.text,
-                    parts = { node.value }
+                    parts = { node.value },
                 }
 
                 result[#result + 1] = last
@@ -153,7 +153,7 @@ postprocessNode = function(node)
 
         return {
             type = NodeType.text,
-            value = concat(parts)
+            value = concat(parts),
         }
     elseif nodeType == NodeType.argument or nodeType == NodeType.at_key or nodeType == NodeType.at_value then
         -- convert node to list of child nodes

@@ -1,7 +1,7 @@
 local utils = require 'utils'
 local MultiMap = require 'interpolate/MultiMap'
 local entry = require 'interpolate/entry'
-local unpack = unpack or table.unpack
+local unpack = unpack or table.unpack ---@diagnostic disable-line: deprecated
 local select = select
 local tostring = tostring
 local tonumber = tonumber
@@ -16,7 +16,7 @@ local libraries = {}
 libraries.functions = {}
 
 
-local nan = tostring(0/0)
+local nan = tostring(0 / 0)
 
 
 ---Wrapper that converts the first argument to a string.
@@ -378,11 +378,17 @@ libraries.functions.boolean = {
 ---Contains functions related to translation.
 libraries.functions.translation = {
     gettext = firstToString(function(...)
-        if not getText then return '' end
+        if not getText then
+            return ''
+        end
+
         return getText(unpack(utils.pack(utils.map(tostring, { ... })), 1, 5))
     end),
     gettextornull = firstToString(function(...)
-        if not getTextOrNull then return '' end
+        if not getTextOrNull then
+            return ''
+        end
+
         return getTextOrNull(unpack(utils.pack(utils.map(tostring, { ... })), 1, 5))
     end),
 }

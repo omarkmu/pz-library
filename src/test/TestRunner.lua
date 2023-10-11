@@ -26,12 +26,13 @@ local function tryGetTraceback(target, targetName)
                 if not fName then
                     fName = format('<%s:%s>', info.short_src, info.currentline)
                 end
+
                 name = format("function '%s'", fName)
             else
                 name = 'main chunk'
             end
 
-            result[#result+1] = format('\n\t%s:%s: in %s', info.short_src, info.currentline, name)
+            result[#result + 1] = format('\n\t%s:%s: in %s', info.short_src, info.currentline, name)
         end
 
         level = level + 1
@@ -149,7 +150,7 @@ function TestRunner:collectTests(suite)
         local tests = self:collectTestsFromCase(case)
 
         if #tests > 0 then
-            records[#records+1] = {
+            records[#records + 1] = {
                 case = case,
                 tests = tests,
             }

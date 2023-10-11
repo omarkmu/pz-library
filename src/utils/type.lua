@@ -1,7 +1,7 @@
 local deepEquals
 local rawget = rawget
 local getmetatable = getmetatable
-local unpack = unpack or table.unpack
+local unpack = unpack or table.unpack ---@diagnostic disable-line: deprecated
 
 
 ---Utilities related to types.
@@ -58,7 +58,7 @@ end
 ---@param ... unknown
 ---@return function
 function utils.bind(func, ...)
-    local nArgs = select('#', ... )
+    local nArgs = select('#', ...)
     local boundArgs = { ... }
 
     return function(...)

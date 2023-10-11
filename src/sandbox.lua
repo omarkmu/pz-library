@@ -67,7 +67,6 @@ function sandbox.new(tableName)
 end
 
 
----@diagnostic disable-next-line: param-type-mismatch
 setmetatable(sandbox, {
     __call = function(self, ...) return self.new(...) end,
 })
