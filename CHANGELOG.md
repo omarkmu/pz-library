@@ -1,3 +1,6 @@
+# 1.2.1
+- Fixed dependency on `next` function in json encode
+
 # 1.2.0
 - Added json functions to utils module
 
