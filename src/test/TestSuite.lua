@@ -13,6 +13,7 @@ end
 
 ---Creates a new test suite.
 ---@param cases omi.test.TestCase[]
+---@return omi.test.TestSuite
 function TestSuite:new(cases)
     ---@type omi.test.TestSuite
     local this = setmetatable({}, self)

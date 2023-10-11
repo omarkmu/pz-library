@@ -1,0 +1,20 @@
+{
+    "runtime.version": "Lua 5.1",
+    "completion.requireSeparator": "/",
+    "workspace.checkThirdParty": false,
+    "diagnostics.libraryFiles": "Disable",
+    "diagnostics.disable": [
+        "spell-check",
+        "name-style-check",
+        "no-unknown"
+    ],
+    "diagnostics.groupSeverity": {
+        "codestyle": "Information",
+        "conventions": "Warning",
+        "redefined": "Warning",
+        "unused": "Warning"
+    },
+    "workspace.ignoreDir": [
+        ".vscode"
+    ]
+}

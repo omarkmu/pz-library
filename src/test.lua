@@ -54,6 +54,7 @@ test.TextTestRunner = TextTestRunner
 
 ---Copies command-line arguments into `options`.
 ---@param options omi.test.RunOptions
+---@return omi.test.RunOptions
 local function parseArgs(options)
     local copy = {}
     for k, v in pairs(options) do copy[k] = v end
@@ -103,6 +104,7 @@ end
 ---Runs tests on a test suite or a single test case.
 ---@param cls omi.test.TestCase | omi.test.TestSuite
 ---@param options omi.test.RunOptions?
+---@return omi.test.TestResult
 function test.run(cls, options)
     ---@type omi.test.RunOptions
     options = parseArgs(options or {})

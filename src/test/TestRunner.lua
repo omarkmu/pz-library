@@ -26,12 +26,13 @@ local function tryGetTraceback(target, targetName)
                 if not fName then
                     fName = format('<%s:%s>', info.short_src, info.currentline)
                 end
+
                 name = format("function '%s'", fName)
             else
                 name = 'main chunk'
             end
 
-            result[#result+1] = format('\n\t%s:%s: in %s', info.short_src, info.currentline, name)
+            result[#result + 1] = format('\n\t%s:%s: in %s', info.short_src, info.currentline, name)
         end
 
         level = level + 1
@@ -149,7 +150,7 @@ function TestRunner:collectTests(suite)
         local tests = self:collectTestsFromCase(case)
 
         if #tests > 0 then
-            records[#records+1] = {
+            records[#records + 1] = {
                 case = case,
                 tests = tests,
             }
@@ -177,7 +178,8 @@ function TestRunner:runTestCase(testCase, result)
         skipTests = true
     end
 
-    for _, rec in ipairs(testCase.tests) do
+    for i = 1, #testCase.tests do
+        local rec = testCase.tests[i]
         result:startTest(rec)
 
         if skipTests then
@@ -215,8 +217,8 @@ end
 ---Runs a test suite or test case.
 ---@param suite omi.test.TestSuite
 ---@param options omi.test.RunOptions
+---@return omi.test.TestResult
 function TestRunner:runTests(suite, options)
-    ---@type omi.test.TestResult
     local result = self:makeResult(options)
 
     local endTime
@@ -229,8 +231,8 @@ function TestRunner:runTests(suite, options)
     )
 
     if success and #records > 0 then
-        for _, rec in ipairs(records) do
-            self:runTestCase(rec, result)
+        for i = 1, #records do
+            self:runTestCase(records[i], result)
         end
     end
 

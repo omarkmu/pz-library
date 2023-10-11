@@ -48,7 +48,6 @@ function class.new(cls)
 end
 
 
----@diagnostic disable-next-line: param-type-mismatch
 setmetatable(class, {
     __call = function(self, ...) return self.new(...) end,
 })

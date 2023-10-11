@@ -17,6 +17,7 @@ TextTestResult._thinSep = string.rep('-', 70)
 
 ---Formats a function name with the available information.
 ---@param func omi.test.FunctionRecord
+---@return string
 ---@protected
 function TextTestResult:_formatFunctionName(func)
     local name = func.name
@@ -33,6 +34,7 @@ end
 ---@param shortStatus string
 ---@param func omi.test.FunctionRecord?
 ---@protected
+---@diagnostic disable-next-line: unused-local
 function TextTestResult:_writeStatus(status, shortStatus, func)
     if not self._inTest then
         -- avoid printing fail/error status for beforeAll/afterAll
@@ -94,7 +96,8 @@ function TextTestResult:_printErrorList(errType, list)
 
     self:_print(self._fullSep)
 
-    for _, err in ipairs(list) do
+    for i = 1, #list do
+        local err = list[i]
         self:_printf('%s: %s', errType, err.func and self:_formatFunctionName(err.func) or '')
         self:_print(self._thinSep)
         self:_print(err.formattedError)
@@ -139,13 +142,15 @@ function TextTestResult:stopTestRun(duration)
     local details = {}
 
     if #self.failures > 0 then
-        details[#details+1] = format('failures=%d', #self.failures)
+        details[#details + 1] = format('failures=%d', #self.failures)
     end
+
     if #self.errors > 0 then
-        details[#details+1] = format('errors=%d', #self.errors)
+        details[#details + 1] = format('errors=%d', #self.errors)
     end
+
     if #self.skipped > 0 then
-        details[#details+1] = format('skipped=%d', #self.skipped)
+        details[#details + 1] = format('skipped=%d', #self.skipped)
     end
 
     if #details > 0 then
@@ -165,6 +170,7 @@ end
 
 ---Adds a success and prints it to the screen.
 ---@param func omi.test.FunctionRecord
+---@return omi.test.SuccessRecord
 function TextTestResult:addSuccess(func)
     self:_writeStatus('ok', '.', func)
     return TestResult.addSuccess(self, func)
@@ -173,6 +179,7 @@ end
 ---Adds a skip and prints it to the output.
 ---@param func omi.test.FunctionRecord
 ---@param reason string?
+---@return omi.test.SkipRecord
 function TextTestResult:addSkip(func, reason)
     local status = reason and format("skipped '%s'", reason) or 'skipped'
     self:_writeStatus(status, 's', func)
@@ -183,6 +190,7 @@ end
 ---@param func omi.test.FunctionRecord
 ---@param failure omi.test.FailTestSignal
 ---@param traceback string?
+---@return omi.test.FailRecord
 function TextTestResult:addFail(func, failure, traceback)
     self:_writeStatus('FAIL', 'F', func)
     return TestResult.addFail(self, func, failure, traceback)
@@ -192,6 +200,7 @@ end
 ---@param error unknown
 ---@param traceback string?
 ---@param func omi.test.FunctionRecord?
+---@return omi.test.ErrorRecord
 function TextTestResult:addError(error, traceback, func)
     self:_writeStatus('ERROR', 'E', func)
     return TestResult.addError(self, error, traceback, func)

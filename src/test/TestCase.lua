@@ -206,7 +206,7 @@ end
 ---@param condition unknown
 ---@param reason string? The reason for skipping the test.
 function TestCase:skipUnless(condition, reason)
-    return self:skipIf(not condition, reason)
+    self:skipIf(not condition, reason)
 end
 
 ---Gets or sets the behavior for messages passed to assertion functions.

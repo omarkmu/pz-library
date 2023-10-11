@@ -16,7 +16,7 @@ local utils = require 'utils/type'
 local Parser = class()
 
 Parser.Errors = {
-    BAD_CHAR = 'unexpected character: `%s`'
+    BAD_CHAR = 'unexpected character: `%s`',
 }
 
 
@@ -99,6 +99,7 @@ end
 
 ---Gets or sets the current pointer position.
 ---@param value integer?
+---@return integer
 ---@protected
 function Parser:pos(value)
     if value then
@@ -203,8 +204,8 @@ function Parser:error(err, node, start, stop)
         node = node ~= self._tree and node or nil,
         range = {
             start or node.range[1],
-            stop or node.range[2]
-        }
+            stop or node.range[2],
+        },
     }
 
     if self._raiseErrors then
@@ -235,8 +236,8 @@ function Parser:warning(err, node, start, stop)
         node = node ~= self._tree and node or nil,
         range = {
             start or node.range[1],
-            stop or node.range[2]
-        }
+            stop or node.range[2],
+        },
     }
 end
 

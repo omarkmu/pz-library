@@ -1,7 +1,7 @@
 local utils = require 'utils'
 local MultiMap = require 'interpolate/MultiMap'
 local entry = require 'interpolate/entry'
-local unpack = unpack or table.unpack
+local unpack = unpack or table.unpack ---@diagnostic disable-line: deprecated
 local select = select
 local tostring = tostring
 local tonumber = tonumber
@@ -9,17 +9,21 @@ local tonumber = tonumber
 
 ---Built-in interpolator function libraries.
 ---@class omi.interpolate.Libraries
-local InterpolatorLibraries = {}
+local libraries = {}
 
-local functions = {}
-local nan = tostring(0/0)
+---Contains library function tables.
+---@type table<string, table<string, fun(interpolator: omi.interpolate.Interpolator, ...: unknown): unknown?>>
+libraries.functions = {}
+
+
+local nan = tostring(0 / 0)
 
 
 ---Wrapper that converts the first argument to a string.
 ---@param f function
 ---@return function
 local function firstToString(f)
-    return function(self, ...)
+    return function(_, ...)
         return f(tostring(select(1, ...) or ''), select(2, ...))
     end
 end
@@ -29,7 +33,7 @@ end
 ---@param f function
 ---@return function
 local function concatenateArgs(f)
-    return function(self, ...)
+    return function(_, ...)
         return f(utils.concat({ ... }))
     end
 end
@@ -38,7 +42,7 @@ end
 ---@param f function
 ---@return function
 local function comparator(f)
-    return function(self, this, other)
+    return function(_, this, other)
         this = tostring(this or '')
         other = tostring(other or '')
 
@@ -55,8 +59,9 @@ end
 
 ---Wrapper for unary math functions.
 ---@param f function
+---@return function
 local function unary(f)
-    return function(self, ...)
+    return function(_, ...)
         local value = tonumber(utils.concat({ ... }))
         if value then
             return f(value)
@@ -66,6 +71,7 @@ end
 
 ---Wrapper for unary math functions with multiple returns.
 ---@param f function
+---@return function
 local function unaryList(f)
     return function(self, ...)
         local value = tonumber(utils.concat({ ... }))
@@ -73,14 +79,15 @@ local function unaryList(f)
             return
         end
 
-        return functions.map.list(self, f(value))
+        return libraries.functions.map.list(self, f(value))
     end
 end
 
 ---Wrapper for binary math functions.
 ---@param f function
+---@return function
 local function binary(f)
-    return function(self, x, ...)
+    return function(_, x, ...)
         x = tonumber(tostring(x))
         if not x then
             return
@@ -111,7 +118,7 @@ end
 ---@param f function
 ---@param interpolator omi.interpolate.Interpolator
 ---@param ... unknown
----@return unknown?
+---@return omi.interpolate.MultiMap?
 local function tryList(f, interpolator, ...)
     local results = { pcall(f, ...) }
 
@@ -119,15 +126,14 @@ local function tryList(f, interpolator, ...)
         return
     end
 
-    return functions.map.list(interpolator, unpack(results, 2))
+    return libraries.functions.map.list(interpolator, unpack(results, 2))
 end
 
 
 ---Contains math functions.
-functions.math = {
+libraries.functions.math = {
     pi = function() return math.pi end,
-    ---@param interpolator omi.interpolate.Interpolator
-    isnan = function(interpolator, n) return tostring(n) == nan end,
+    isnan = function(_, n) return tostring(n) == nan end,
     abs = unary(math.abs),
     acos = unary(math.acos),
     add = binary(function(x, y) return x + y end),
@@ -151,8 +157,7 @@ functions.math = {
     log10 = unary(function(x)
         return try(math.log10, x)
     end),
-    ---@param interpolator omi.interpolate.Interpolator
-    max = function(interpolator, ...)
+    max = function(_, ...)
         local max
         local strComp = not utils.all(tonumber, { ... })
 
@@ -167,8 +172,7 @@ functions.math = {
 
         return max
     end,
-    ---@param interpolator omi.interpolate.Interpolator
-    min = function(interpolator, ...)
+    min = function(_, ...)
         local min
         local strComp = not utils.all(tonumber, { ... })
 
@@ -198,7 +202,7 @@ functions.math = {
 }
 
 ---Contains string functions.
-functions.string = {
+libraries.functions.string = {
     str = concatenateArgs(tostring),
     lower = concatenateArgs(string.lower),
     upper = concatenateArgs(string.upper),
@@ -211,11 +215,9 @@ functions.string = {
     contains = firstToString(function(s, other) return utils.contains(s, tostring(other or '')) end),
     startswith = firstToString(function(s, other) return utils.startsWith(s, tostring(other or '')) end),
     endswith = firstToString(function(s, other) return utils.endsWith(s, tostring(other or '')) end),
-    ---@param interpolator omi.interpolate.Interpolator
-    concat = function(interpolator, ...) return utils.concat({ ... }) end,
+    concat = function(_, ...) return utils.concat({ ... }) end,
     concats = firstToString(function(sep, ...) return utils.concat({ ... }, sep) end),
-    ---@param interpolator omi.interpolate.Interpolator
-    len = function(interpolator, ...) return #utils.concat({ ... }) end,
+    len = function(_, ...) return #utils.concat({ ... }) end,
     capitalize = firstToString(function(s) return s:sub(1, 1):upper() .. s:sub(2) end),
     punctuate = firstToString(function(s, punctuation, chars)
         punctuation = tostring(punctuation or '.')
@@ -234,15 +236,12 @@ functions.string = {
 
         return s
     end),
-    ---@param interpolator omi.interpolate.Interpolator
     gsub = function(interpolator, s, pattern, repl, n)
         s = tostring(s or '')
-
-        if not pattern or pattern == '' then
-            return functions.map.list(interpolator, s, #s + 1)
-        end
-
-        return tryList(string.gsub, interpolator, s, pattern or '', repl or '', n)
+        pattern = tostring(pattern or '')
+        repl = tostring(repl or '')
+        n = tonumber(n)
+        return tryList(string.gsub, interpolator, s, pattern, repl, n)
     end,
     sub = firstToString(function(s, i, j)
         i = tonumber(i)
@@ -265,16 +264,12 @@ functions.string = {
 
         return s:sub(i, i)
     end),
-    ---@param interpolator omi.interpolate.Interpolator
     match = function(interpolator, s, pattern, init)
-        if not pattern then
-            return
-        end
-
         s = tostring(s or '')
-        return tryList(string.match, interpolator, s, pattern, init or 1)
+        pattern = tostring(pattern or '')
+        init = tonumber(init) or 1
+        return tryList(string.match, interpolator, s, pattern, init)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     char = function(interpolator, ...)
         local args = {}
 
@@ -304,7 +299,6 @@ functions.string = {
 
         return try(string.char, unpack(args))
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     byte = function(interpolator, s, i, j)
         i = tonumber(i or 1)
         if not i then
@@ -330,8 +324,7 @@ functions.string = {
 }
 
 ---Contains boolean functions.
-functions.boolean = {
-    ---@param interpolator omi.interpolate.Interpolator
+libraries.functions.boolean = {
     ['not'] = function(interpolator, value)
         return not interpolator:toBoolean(value)
     end,
@@ -341,7 +334,6 @@ functions.boolean = {
     lt = comparator(function(a, b) return a < b end),
     gte = comparator(function(a, b) return a >= b end),
     lte = comparator(function(a, b) return a <= b end),
-    ---@param interpolator omi.interpolate.Interpolator
     any = function(interpolator, ...)
         for i = 1, select('#', ...) do
             local value = select(i, ...)
@@ -350,7 +342,6 @@ functions.boolean = {
             end
         end
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     all = function(interpolator, ...)
         local n = select('#', ...)
         if n == 0 then
@@ -365,19 +356,16 @@ functions.boolean = {
 
         return select(n, ...)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     ['if'] = function(interpolator, condition, ...)
         if interpolator:toBoolean(condition) then
             return utils.concat({ ... })
         end
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     unless = function(interpolator, condition, ...)
         if not interpolator:toBoolean(condition) then
             return utils.concat({ ... })
         end
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     ifelse = function(interpolator, condition, yes, ...)
         if interpolator:toBoolean(condition) then
             return yes
@@ -388,24 +376,27 @@ functions.boolean = {
 }
 
 ---Contains functions related to translation.
-functions.translation = {
+libraries.functions.translation = {
     gettext = firstToString(function(...)
-        if not getText then return '' end
+        if not getText then
+            return ''
+        end
+
         return getText(unpack(utils.pack(utils.map(tostring, { ... })), 1, 5))
     end),
     gettextornull = firstToString(function(...)
-        if not getTextOrNull then return '' end
+        if not getTextOrNull then
+            return ''
+        end
+
         return getTextOrNull(unpack(utils.pack(utils.map(tostring, { ... })), 1, 5))
     end),
 }
 
 ---Contains functions related to at-maps.
-functions.map = {
+libraries.functions.map = {
     ---Creates a list. If a single argument is provided and it is an at-map, its values will be used.
     ---Otherwise, the list is made up of all provided arguments.
-    ---@param interpolator omi.interpolate.Interpolator
-    ---@param ... unknown
-    ---@return omi.interpolate.MultiMap?
     list = function(interpolator, ...)
         local entries = {}
         local o = select(1, ...)
@@ -430,7 +421,6 @@ functions.map = {
 
         return MultiMap:new(entries)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     map = function(interpolator, func, o, ...)
         if not utils.isinstance(o, MultiMap) then
             return
@@ -446,38 +436,34 @@ functions.map = {
 
         return MultiMap:new(entries)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     len = function(interpolator, ...)
         local o = select(1, ...)
         if select('#', ...) ~= 1 or not utils.isinstance(o, MultiMap) then
-            return functions.string.len(interpolator, ...)
+            return libraries.functions.string.len(interpolator, ...)
         end
 
         ---@cast o omi.interpolate.MultiMap
         return o:size()
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     concat = function(interpolator, ...)
         local o = select(1, ...)
         if select('#', ...) ~= 1 or not utils.isinstance(o, MultiMap) then
-            return functions.string.concat(interpolator, ...)
+            return libraries.functions.string.concat(interpolator, ...)
         end
 
         ---@cast o omi.interpolate.MultiMap
         return o:concat()
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     concats = function(interpolator, sep, ...)
         local o = select(1, ...)
         if select('#', ...) ~= 1 or not utils.isinstance(o, MultiMap) then
-            return functions.string.concats(interpolator, sep, ...)
+            return libraries.functions.string.concats(interpolator, sep, ...)
         end
 
         ---@cast o omi.interpolate.MultiMap
         return o:concat(sep)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
-    nthvalue = function(interpolator, o, n)
+    nthvalue = function(_, o, n)
         if not o or not utils.isinstance(o, MultiMap) then
             return
         end
@@ -493,53 +479,47 @@ functions.map = {
             return e.value
         end
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     first = function(interpolator, ...)
         local o = select(1, ...)
         if select('#', ...) ~= 1 or not utils.isinstance(o, MultiMap) then
-            return functions.string.first(interpolator, ...)
+            return libraries.functions.string.first(interpolator, ...)
         end
 
         ---@cast o omi.interpolate.MultiMap
         return o:first()
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     last = function(interpolator, ...)
         local o = select(1, ...)
         if select('#', ...) ~= 1 or not utils.isinstance(o, MultiMap) then
-            return functions.string.last(interpolator, ...)
+            return libraries.functions.string.last(interpolator, ...)
         end
 
         ---@cast o omi.interpolate.MultiMap
         return o:last()
     end,
-    ---@param interpolator omi.interpolate.Interpolator
-    has = function(interpolator, o, k)
+    has = function(_, o, k)
         if not o or not utils.isinstance(o, MultiMap) then
             return
         end
 
         return o:has(k)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
-    get = function(interpolator, o, k, d)
+    get = function(_, o, k, d)
         if not o or not utils.isinstance(o, MultiMap) then
             return
         end
 
         return o:get(k, d)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
     index = function(interpolator, o, i, d)
         if not utils.isinstance(o, MultiMap) then
-            return functions.string.index(interpolator, o, i, d)
+            return libraries.functions.string.index(interpolator, o, i, d)
         end
 
         ---@cast o omi.interpolate.MultiMap
         return o:index(i, d)
     end,
-    ---@param interpolator omi.interpolate.Interpolator
-    unique = function(interpolator, o)
+    unique = function(_, o)
         if utils.isinstance(o, MultiMap) then
             ---@cast o omi.interpolate.MultiMap
             return o:unique()
@@ -548,18 +528,10 @@ functions.map = {
 }
 
 ---Contains functions that can mutate interpolator state.
-functions.mutators = {
-    ---Sets the random seed for the interpolator.
-    ---@param interpolator omi.interpolate.Interpolator
-    ---@param seed unknown
+libraries.functions.mutators = {
     randomseed = function(interpolator, seed)
         return interpolator:randomseed(seed)
     end,
-    ---Returns a random number.
-    ---@param interpolator omi.interpolate.Interpolator
-    ---@param m integer?
-    ---@param n integer?
-    ---@return number?
     random = function(interpolator, m, n)
         if m and not tonumber(m) then
             return
@@ -573,8 +545,6 @@ functions.mutators = {
     end,
     ---Returns a random element from the given options.
     ---If the sole argument provided is an at-map, a value is chosen from its values.
-    ---@param interpolator omi.interpolate.Interpolator
-    ---@param ... unknown
     choose = function(interpolator, ...)
         local o = select(1, ...)
         if select('#', ...) ~= 1 or not utils.isinstance(o, MultiMap) then
@@ -590,9 +560,6 @@ functions.mutators = {
         return interpolator:randomChoice(values)
     end,
     ---Sets the value of an interpolation token.
-    ---@param interpolator omi.interpolate.Interpolator
-    ---@param token unknown
-    ---@param ... unknown
     set = function(interpolator, token, ...)
         local value
         if select('#', ...) > 1 then
@@ -605,11 +572,9 @@ functions.mutators = {
     end,
 }
 
----Contains library function tables.
-InterpolatorLibraries.functions = functions
 
 ---List of interpolator libraries in the order they should be loaded.
-InterpolatorLibraries.list = {
+libraries.list = {
     'math',
     'boolean',
     'string',
@@ -623,14 +588,15 @@ InterpolatorLibraries.list = {
 ---@param include table<string, true>? A set of function or modules to include.
 ---@param exclude table<string, true>? A set of function or modules to exclude.
 ---@return table
-function InterpolatorLibraries:load(include, exclude)
+function libraries:load(include, exclude)
     exclude = exclude or {}
 
     local result = {}
 
-    for _, lib in ipairs(self.list) do
+    for i = 1, #self.list do
+        local lib = self.list[i]
         if (not include or include[lib]) and not exclude[lib] then
-            local funcs = InterpolatorLibraries.functions[lib]
+            local funcs = libraries.functions[lib]
             for k, func in pairs(funcs) do
                 local name = table.concat({ lib, '.', k })
                 if (not include or include[name]) and not exclude[name] then
@@ -644,4 +610,4 @@ function InterpolatorLibraries:load(include, exclude)
 end
 
 
-return InterpolatorLibraries
+return libraries

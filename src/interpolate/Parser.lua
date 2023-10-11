@@ -1,6 +1,9 @@
 local BaseParser = require 'fmt/Parser'
 local utils = require 'utils'
 
+local concat = table.concat
+
+
 ---Parser for the interpolated string format.
 ---@class omi.interpolate.Parser : omi.fmt.Parser
 ---@field protected _allowTokens boolean
@@ -92,14 +95,15 @@ local function mergeTextNodes(tab)
     local result = {}
 
     local last
-    for _, node in ipairs(tab) do
+    for i = 1, #tab do
+        local node = tab[i]
         if node.type == NodeType.text then
             if last and last.parts and last.type == NodeType.text then
                 last.parts[#last.parts + 1] = node.value
             else
                 last = {
                     type = NodeType.text,
-                    parts = { node.value }
+                    parts = { node.value },
                 }
 
                 result[#result + 1] = last
@@ -110,9 +114,10 @@ local function mergeTextNodes(tab)
         end
     end
 
-    for _, node in ipairs(result) do
+    for i = 1, #result do
+        local node = result[i]
         if node.parts and node.type == NodeType.text then
-            node.value = table.concat(node.parts)
+            node.value = concat(node.parts)
             node.parts = nil
         end
     end
@@ -138,8 +143,8 @@ postprocessNode = function(node)
         -- convert string to basic text node
         local parts = {}
         if node.children then
-            for _, child in ipairs(node.children) do
-                local built = postprocessNode(child)
+            for i = 1, #node.children do
+                local built = postprocessNode(node.children[i])
                 if built and built.value then
                     parts[#parts + 1] = built.value
                 end
@@ -148,14 +153,14 @@ postprocessNode = function(node)
 
         return {
             type = NodeType.text,
-            value = table.concat(parts)
+            value = concat(parts),
         }
     elseif nodeType == NodeType.argument or nodeType == NodeType.at_key or nodeType == NodeType.at_value then
         -- convert node to list of child nodes
         local parts = {}
         if node.children then
-            for _, child in ipairs(node.children) do
-                local built = postprocessNode(child)
+            for i = 1, #node.children do
+                local built = postprocessNode(node.children[i])
                 if built then
                     parts[#parts + 1] = built
                 end
@@ -167,7 +172,8 @@ postprocessNode = function(node)
         local args = {}
 
         if node.children then
-            for _, child in ipairs(node.children) do
+            for i = 1, #node.children do
+                local child = node.children[i]
                 local type = child.type
                 if type == NodeType.argument then
                     args[#args + 1] = postprocessNode(child)
@@ -219,10 +225,10 @@ postprocessNode = function(node)
 end
 
 
----@protected
 ---Gets the value of a named or numeric entity.
----@protected
 ---@param entity string
+---@return string
+---@protected
 function InterpolationParser:getEntityValue(entity)
     return utils.getEntityValue(entity) or entity
 end
@@ -583,8 +589,8 @@ function InterpolationParser:postprocess(tree)
         return result
     end
 
-    for _, child in ipairs(tree.children) do
-        local built = postprocessNode(child)
+    for i = 1, #tree.children do
+        local built = postprocessNode(tree.children[i])
         if built then
             result[#result + 1] = built
         end
