@@ -255,7 +255,7 @@ end
 ---@param text string
 ---@return string
 function utils.trimleft(text)
-    return (text:gsub('^%s*(.+)', '%1'))
+    return (text:gsub('^%s*(.*)', '%1'))
 end
 
 ---Removes whitespace from the end of a string.
