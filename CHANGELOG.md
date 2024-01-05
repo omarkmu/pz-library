@@ -1,3 +1,6 @@
+# 1.2.2
+- Fixed incorrect behavior in `utils.trimleft`
+
 # 1.2.1
 - Fixed dependency on `next` function in json encode
 
