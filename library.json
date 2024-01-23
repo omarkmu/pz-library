@@ -19,7 +19,7 @@
     },
     "sandbox": {
       "require": "sandbox",
-      "before": "---@type omi.sandbox | (fun(tableName: string): omi.Sandbox)"
+      "before": "---@type omi.sandbox | (fun(tableName: string): omi.SandboxHelper)"
     },
     "fmt": {
       "require": "fmt",
