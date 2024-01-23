@@ -326,7 +326,7 @@ end
 ---@param token unknown
 ---@param value unknown
 function Interpolator:setTokenValidated(token, value)
-    if self._requireCustomTokenUnderscore and not utils.startsWith(token, '_') and self._tokens[token] == nil then
+    if self._requireCustomTokenUnderscore and token:sub(1, 1) ~= '_' and self:token(token) == nil then
         return
     end
 
@@ -344,7 +344,18 @@ function Interpolator:setPattern(pattern)
         self._parser:reset(pattern)
     end
 
-    self._built = self._parser:postprocess(self._parser:parse())
+    local result = self._parser:parse()
+    if not result.success then
+        local list = {}
+        for i = 1, #result.errors do
+            list[#list + 1] = result.errors[i].message
+        end
+
+        local errors = table.concat(list, ', ')
+        error(string.format('interpolation of pattern `%s` failed: %s', pattern, errors))
+    end
+
+    self._built = result.value
 end
 
 ---Sets library functions which should be allowed and disallowed.

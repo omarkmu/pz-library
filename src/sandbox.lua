@@ -11,7 +11,7 @@ local getSandboxOptions = getSandboxOptions
 local sandbox = {}
 
 ---Helper for retrieving custom sandbox options.
----@class omi.Sandbox
+---@class omi.SandboxHelper
 ---@field protected _defaults table? Table containing default option values.
 ---@field protected _name string Name of a mod's sandbox variable table.
 local SandboxHelper = {}
@@ -61,7 +61,7 @@ end
 
 ---Creates a new sandbox helper.
 ---@param tableName string The name of the sandbox options table.
----@return omi.Sandbox
+---@return omi.SandboxHelper
 function sandbox.new(tableName)
     return setmetatable({ _name = tableName }, SandboxHelper)
 end
@@ -77,5 +77,5 @@ sandbox.Sandbox = SandboxHelper
 
 
 ---@diagnostic disable-next-line: cast-type-mismatch
----@cast sandbox omi.sandbox | (fun(tableName: string): omi.Sandbox)
+---@cast sandbox omi.sandbox | (fun(tableName: string): omi.SandboxHelper)
 return sandbox

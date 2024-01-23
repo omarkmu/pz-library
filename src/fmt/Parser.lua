@@ -5,29 +5,25 @@ local utils = require 'utils/type'
 
 ---Base string parser.
 ---@class omi.fmt.Parser : omi.Class
----@field protected _errors omi.fmt.ParserError[]?
----@field protected _warnings omi.fmt.ParserError[]?
+---@field protected _errors omi.fmt.ParserError[]
+---@field protected _warnings omi.fmt.ParserError[]
 ---@field protected _ptr integer
 ---@field protected _text string
 ---@field protected _node omi.fmt.ParseTreeNode?
 ---@field protected _tree omi.fmt.ParseTree
----@field protected _treeNodeName string
+---@field protected _treeNodeType string?
 ---@field protected _raiseErrors boolean
 local Parser = class()
-
-Parser.Errors = {
-    BAD_CHAR = 'unexpected character: `%s`',
-}
 
 
 ---Base parser options.
 ---@class omi.fmt.ParserOptions
 ---@field raiseErrors boolean?
----@field treeNodeName string?
+---@field treeNodeType string?
 
 ---Describes error that occurred during parsing.
 ---@class omi.fmt.ParserError
----@field error string
+---@field message string
 ---@field node omi.fmt.ParseTreeNode?
 ---@field range integer[]
 
@@ -41,8 +37,6 @@ Parser.Errors = {
 ---Top-level parse tree node.
 ---@class omi.fmt.ParseTree : omi.fmt.ParseTreeNode
 ---@field source string
----@field errors omi.fmt.ParserError[]?
----@field warnings omi.fmt.ParserError[]?
 
 
 ---Moves the parser pointer forward.
@@ -78,6 +72,15 @@ function Parser:read(n)
     self:forward(n)
 
     return result
+end
+
+---Matches a string pattern against the parser's current text.
+---@param pattern string The string pattern.
+---@param pos integer? A position to start from. Defaults to the current position.
+---@return ...
+---@protected
+function Parser:match(pattern, pos)
+    return self._text:match(pattern, pos or self:pos())
 end
 
 ---Returns a substring of the current text.
@@ -162,7 +165,7 @@ end
 ---@param stop integer?
 ---@protected
 function Parser:setNodeRange(node, start, stop)
-    local len = #self._text
+    local len = self:len()
     local pos = self:pos()
     node.range[1] = math.max(1, math.min(start or node.range[1] or pos, len))
     node.range[2] = math.max(1, math.min(stop or node.range[2] or pos, len))
@@ -200,7 +203,7 @@ end
 ---@protected
 function Parser:error(err, node, start, stop)
     self._errors[#self._errors + 1] = {
-        error = err,
+        message = err,
         node = node ~= self._tree and node or nil,
         range = {
             start or node.range[1],
@@ -232,7 +235,7 @@ end
 ---@protected
 function Parser:warning(err, node, start, stop)
     self._warnings[#self._warnings + 1] = {
-        error = err,
+        message = err,
         node = node ~= self._tree and node or nil,
         range = {
             start or node.range[1],
@@ -252,6 +255,39 @@ function Parser:warningHere(err, node, len)
     self:warning(err, node, pos, pos + len - 1)
 end
 
+---Creates the parse tree.
+---@protected
+function Parser:createTree()
+    local tree = self:addNode(self:createNode(self._treeNodeType))
+
+    ---@cast tree omi.fmt.ParseTree
+    tree.source = self._text
+    self:setNodeEnd(tree, self:len())
+
+    self._tree = tree
+end
+
+---Performs the parsing operation.
+---@protected
+function Parser:perform()
+    while self:pos() <= self:len() do
+        if not self:readExpression() then
+            local pos = self:pos()
+            self:error(string.format('unexpected character: `%s`', self:peek()), self._tree, pos, pos)
+
+            -- avoid infinite loops
+            self:forward()
+        end
+    end
+end
+
+---Performs postprocessing on the tree.
+---@return omi.fmt.ParseTree
+---@protected
+function Parser:postprocess()
+    return self._tree
+end
+
 ---Resets the parser state.
 ---@param text string? If provided, sets the text to parse.
 function Parser:reset(text)
@@ -260,44 +296,14 @@ function Parser:reset(text)
     self._errors = {}
     self._warnings = {}
     self._node = nil
-
-    local tree = self:addNode(self:createNode(self._treeNodeName))
-
-    ---@cast tree omi.fmt.ParseTree
-    tree.source = self._text
-    self:setNodeEnd(tree, #self._text)
-
-    self._tree = tree
+    self:createTree()
 end
 
 ---Performs parsing and returns the tree.
 ---@return omi.fmt.ParseTree
 function Parser:parse()
-    while self:pos() <= self:len() do
-        if not self:readExpression() then
-            self:error(Parser.Errors.BAD_CHAR:format(self:peek()), self._tree, self:pos(), self:pos())
-
-            -- avoid infinite loops
-            self:forward()
-        end
-    end
-
-    if #self._errors > 0 then
-        self._tree.errors = self._errors
-    end
-
-    if #self._warnings > 0 then
-        self._tree.warnings = self._warnings
-    end
-
-    return self._tree
-end
-
----Performs postprocessing on the result tree, transforming it into a usable format.
----@param tree omi.fmt.ParseTree
----@return unknown
-function Parser:postprocess(tree)
-    return tree
+    self:perform()
+    return self:postprocess()
 end
 
 ---Creates a new parser.
@@ -310,9 +316,9 @@ function Parser:new(text, options)
 
     options = options or {}
 
-    this:reset(text)
     this._raiseErrors = utils.default(options.raiseErrors, false)
-    this._treeNodeName = utils.default(options.treeNodeName, 'tree')
+    this._treeNodeType = options.treeNodeType
+    this:reset(text)
 
     return this
 end
