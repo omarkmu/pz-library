@@ -98,7 +98,13 @@ function TextTestResult:_printErrorList(errType, list)
 
     for i = 1, #list do
         local err = list[i]
-        self:_printf('%s: %s', errType, err.func and self:_formatFunctionName(err.func) or '')
+        local funcName = err.func and self:_formatFunctionName(err.func)
+        if funcName then
+            self:_printf('%s: %s', errType, funcName)
+        else
+            self:_print(errType)
+        end
+
         self:_print(self._thinSep)
         self:_print(err.formattedError)
         self:_print()

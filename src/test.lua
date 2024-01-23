@@ -34,7 +34,7 @@ local test = {}
 ---@field verbosity integer? Verbosity level.
 ---@field stream file*? File pointer for output. Takes precedence over `output`.
 ---@field output string? Output filename.
----@field exit boolean? Whether to exit after running, if `os.exit` is available. Defaults to true.
+---@field exit boolean | function? If a function is provided, it will be called after running. Otherwise, `os.exit` will be called if `true`. Defaults to `true`.
 ---@field runner omi.test.TestRunner? The test runner to use. A `TextTestRunner` is used by default.
 
 
@@ -102,7 +102,7 @@ function test.case(name)
 end
 
 ---Runs tests on a test suite or a single test case.
----@param cls omi.test.TestCase | omi.test.TestSuite
+---@param cls omi.test.TestSuite | omi.test.TestCase | omi.test.TestCase[]
 ---@param options omi.test.RunOptions?
 ---@return omi.test.TestResult
 function test.run(cls, options)
@@ -123,9 +123,14 @@ function test.run(cls, options)
 
     ---@cast cls omi.test.TestSuite
     local result = runner:runTests(cls, options)
-    if os.exit and utils.default(options.exit, true) then
+    local exit = utils.default(options.exit, true)
+    if exit then
         local code = result:wasUnsuccessful() and 1 or 0
-        os.exit(code)
+        if type(exit) == 'function' then
+            exit(code, result)
+        elseif os.exit then
+            os.exit(code)
+        end
     end
 
     return result
