@@ -1,3 +1,6 @@
+# 2.0.1
+- Fixed incorrect behavior in `utils.escape`
+
 # 2.0.0
 - Improved `omi.fmt.Parser`
     - Added `match`, `perform`, and `createTree` methods
