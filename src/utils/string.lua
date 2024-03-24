@@ -208,7 +208,7 @@ end
 ---@param text string
 ---@return string
 function utils.escape(text)
-    return (text:gsub('([[%]%+-*?().^$])', '%%%1'))
+    return (text:gsub('([[%]%+%-%*?().^$%%])', '%%%1'))
 end
 
 ---Returns the value of a numeric character reference or character entity reference.
