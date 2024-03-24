@@ -84,10 +84,9 @@ function utils.deepEquals(t1, t2)
 end
 
 ---Returns `value` if non-nil. Otherwise, returns `default`.
----@generic T
----@param value? `T`
----@param default T
----@return T
+---@param value? unknown
+---@param default unknown
+---@return unknown
 function utils.default(value, default)
     if value ~= nil then
         return value

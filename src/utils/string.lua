@@ -307,7 +307,7 @@ function utils.endsWith(text, other)
 end
 
 ---Stringifies a value for display.
----For non-tables, this is equivalent to `tostring.`
+---For non-tables, this is equivalent to `tostring`.
 ---Tables will stringify their values unless a `__tostring` method is present on their metatable.
 ---@param value unknown
 ---@param pretty boolean? If true, tables will include newlines and tabs.

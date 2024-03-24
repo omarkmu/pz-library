@@ -46,7 +46,18 @@ local InterpolationParser = BaseParser:derive()
 ---@field entries omi.interpolate.AtExpressionEntry[]
 
 
----@enum omi.interpolate.NodeType
+---@alias omi.interpolate.NodeType
+---| 'at_expression'
+---| 'at_key'
+---| 'at_value'
+---| 'text'
+---| 'token'
+---| 'string'
+---| 'call'
+---| 'escape'
+---| 'argument'
+
+---@type table<omi.interpolate.NodeType, string>
 InterpolationParser.NodeType = {
     at_expression = 'at_expression',
     at_key = 'at_key',

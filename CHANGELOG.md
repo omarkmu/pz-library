@@ -1,3 +1,6 @@
+# 2.0.2
+- Removed `@enum` and `@generic` annotations
+
 # 2.0.1
 - Fixed incorrect behavior in `utils.escape`
 
