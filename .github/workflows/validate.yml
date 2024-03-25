@@ -40,7 +40,4 @@ jobs:
       with:
         luaVersion: '5.1.5'
     - name: Run tests
-      working-directory: '.'
-      env:
-        LUA_PATH: ./?.lua;./src/?.lua
-      run: lua RunTests.lua
+      uses: lunarmodules/busted@v2
