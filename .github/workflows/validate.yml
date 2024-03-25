@@ -41,3 +41,5 @@ jobs:
         luaVersion: '5.1.5'
     - name: Run tests
       uses: lunarmodules/busted@v2
+      with:
+        args: -v test -p .lua
