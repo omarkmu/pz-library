@@ -42,4 +42,4 @@ jobs:
     - name: Run tests
       uses: lunarmodules/busted@v2
       with:
-        args: -v test -p .lua
+        args: -v test -p .lua -m ./src/?.lua
