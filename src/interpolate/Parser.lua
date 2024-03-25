@@ -6,6 +6,7 @@ local concat = table.concat
 
 ---Parser for the interpolated string format.
 ---@class omi.interpolate.Parser : omi.fmt.Parser
+---@field NodeType table<omi.interpolate.NodeType, string>
 ---@field protected _allowTokens boolean
 ---@field protected _allowAtExpr boolean
 ---@field protected _allowFunctions boolean
@@ -57,7 +58,6 @@ local InterpolationParser = BaseParser:derive()
 ---| 'escape'
 ---| 'argument'
 
----@type table<omi.interpolate.NodeType, string>
 InterpolationParser.NodeType = {
     at_expression = 'at_expression',
     at_key = 'at_key',

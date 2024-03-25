@@ -1,8 +1,8 @@
 ---Module containing functionality for string parsing.
 ---@class omi.fmt
+---@field Parser omi.fmt.Parser
 local fmt = {}
 
----@type omi.fmt.Parser
 fmt.Parser = require 'fmt/Parser'
 
 return fmt

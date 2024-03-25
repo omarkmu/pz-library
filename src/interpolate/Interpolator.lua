@@ -12,6 +12,7 @@ local NodeType = InterpolationParser.NodeType
 
 ---Handles string interpolation.
 ---@class omi.interpolate.Interpolator : omi.Class
+---@field Libraries omi.interpolate.Libraries
 ---@field protected _tokens table<string, unknown>
 ---@field protected _functions table<string, function>
 ---@field protected _library table<string, function>
@@ -25,7 +26,6 @@ local NodeType = InterpolationParser.NodeType
 ---@field protected _rand Random?
 local Interpolator = class()
 
----@type omi.interpolate.Libraries
 Interpolator.Libraries = InterpolatorLibraries
 
 ---@class omi.interpolate.Options

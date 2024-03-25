@@ -1,9 +1,9 @@
 ---Module containing utility functions.
 ---@class omi.utils : omi.utils.string, omi.utils.table, omi.utils.type
+---@field json omi.utils.json
 local utils = {}
 
 
----@type omi.utils.json
 utils.json = require('utils/json')
 
 
