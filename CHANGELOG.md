@@ -1,3 +1,7 @@
+# 3.0.0
+- Switched to `busted` for testing
+- Removed `test` module
+
 # 2.0.2
 - Removed `@enum` and `@generic` annotations
 

@@ -1,14 +1,12 @@
 ---Module containing functionality for string interpolation.
 ---@class omi.interpolate
+---@field Parser omi.interpolate.Parser
+---@field Interpolator omi.interpolate.Interpolator
+---@field MultiMap omi.interpolate.MultiMap
 local interpolate = {}
 
----@type omi.interpolate.Parser
 interpolate.Parser = require 'interpolate/Parser'
-
----@type omi.interpolate.Interpolator
 interpolate.Interpolator = require 'interpolate/Interpolator'
-
----@type omi.interpolate.MultiMap
 interpolate.MultiMap = require 'interpolate/MultiMap'
 
 
@@ -18,7 +16,6 @@ interpolate.MultiMap = require 'interpolate/MultiMap'
 ---@param options omi.interpolate.Options?
 ---@return string
 function interpolate.interpolate(text, tokens, options)
-    ---@type omi.interpolate.Interpolator
     local interpolator = interpolate.Interpolator:new(options)
     interpolator:setPattern(text)
 

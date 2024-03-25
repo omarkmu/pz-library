@@ -39,8 +39,11 @@ jobs:
       uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: '5.1.5'
+    - name: Set up LuaRocks
+      uses: leafo/gh-actions-luarocks@v4
+      with:
+        luaRocksVersion: "3.11.0"
+    - name: Set up Busted
+      run: luarocks install busted
     - name: Run tests
-      working-directory: '.'
-      env:
-        LUA_PATH: ./?.lua;./src/?.lua
-      run: lua RunTests.lua
+      run: busted -v test -p .lua -m ./src/?.lua
