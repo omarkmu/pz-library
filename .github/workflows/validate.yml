@@ -39,7 +39,11 @@ jobs:
       uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: '5.1.5'
-    - name: Run tests
-      uses: lunarmodules/busted@v2
+    - name: Set up LuaRocks
+      uses: leafo/gh-actions-luarocks@v4
       with:
-        args: -v test -p .lua -m ./src/?.lua
+        luaRocksVersion: "3.11.0"
+    - name: Set up Busted
+      run: luarocks install busted
+    - name: Run tests
+      run: busted -v test -p .lua -m ./src/?.lua
