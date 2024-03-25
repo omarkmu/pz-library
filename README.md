@@ -11,7 +11,6 @@ The following modules are available:
 | fmt         | String parsing and handling               |
 | interpolate | String interpolation                      |
 | utils       | Common utility functions                  |
-| test        | Lua testing                               |
 
 This library is meant to be be bundled into a single file using [luabun](https://github.com/omarkmu/luabun).
 
@@ -25,5 +24,5 @@ node luabun OmiLib --all -o OmiLib.lua
 To build with specific modules, use:
 
 ```
-node luabun OmiLib --modules test fmt -o OmiLib.lua
+node luabun OmiLib --modules utils fmt -o OmiLib.lua
 ```
