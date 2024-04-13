@@ -1,3 +1,6 @@
+# 3.1.0
+- Added `DelimitedList` utility class
+
 # 3.0.0
 - Switched to `busted` for testing
 - Removed `test` module

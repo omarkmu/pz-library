@@ -1,16 +1,16 @@
 # OmiLib
 
 OmiLib is a Lua utility library created with [Project Zomboid](https://projectzomboid.com) modding in mind.
-As of now, all of its modules are usable from a regular Lua environment, with the exception of `sandbox`.
 The following modules are available:
 
-| Module      | Purpose                                   |
-| ----------- | ----------------------------------------- |
-| class       | Create lightweight classes                |
-| sandbox     | Create sandbox option helpers for modding |
-| fmt         | String parsing and handling               |
-| interpolate | String interpolation                      |
-| utils       | Common utility functions                  |
+| Module        | Purpose                                   |
+| ------------- | ----------------------------------------- |
+| class         | Create lightweight classes                |
+| sandbox       | Create sandbox option helpers for modding |
+| fmt           | String parsing and handling               |
+| interpolate   | String interpolation                      |
+| utils         | Common utility functions                  |
+| DelimitedList | Manage delimited string lists             |
 
 This library is meant to be be bundled into a single file using [luabun](https://github.com/omarkmu/luabun).
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/omarkmu/luabun/main/luabun.schema.json",
   "name": "OmiLib",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "definition": "local OmiLib = {}\n",
   "luaDirectory": "src",
   "header": [
@@ -33,6 +33,10 @@
     "utils": {
       "require": "utils",
       "before": "---@type omi.utils"
+    },
+    "DelimitedList": {
+      "require": "DelimitedList",
+      "before": "---@type omi.DelimitedList"
     }
   }
 }
