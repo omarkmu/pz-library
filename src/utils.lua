@@ -1,10 +1,12 @@
 ---Module containing utility functions.
 ---@class omi.utils : omi.utils.string, omi.utils.table, omi.utils.type
 ---@field json omi.utils.json
+---@field DelimitedList omi.DelimitedList
 local utils = {}
 
 
 utils.json = require('utils/json')
+utils.DelimitedList = require('DelimitedList')
 
 
 local submodules = {
