@@ -1,8 +1,8 @@
 {
   "$schema": "./bundler.schema.json",
-  "name": "OmiLib",
-  "version": "3.1.0",
-  "definition": "local OmiLib = {}\n",
+  "name": "OmiLibrary",
+  "version": "3.1.1",
+  "definition": "local OmiLibrary = {}\n",
   "luaDirectory": "src",
   "header": [
     "---@format disable",
@@ -11,7 +11,7 @@
   "defaultModules": ["class", "sandbox", "utils"],
   "before": [
     "---@class omi.Result<T>: { success: boolean, value: T?, error: string? }\n",
-    "---@class omi.lib"
+    "---@class omi.library"
   ],
   "modules": {
     "class": {
