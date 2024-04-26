@@ -21,11 +21,11 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref || github.ref }}
-        path: OmiLib
+        path: OmiLibrary
     - name: Build bundler
-      run: ./OmiLib/scripts/build.sh
+      run: ./OmiLibrary/scripts/build.sh
     - name: Build bundle
-      run: ./OmiLib/scripts/bundle.sh --all
+      run: ./OmiLibrary/scripts/bundle.sh --all
   test:
     runs-on: ubuntu-latest
     steps:

@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/omarkmu/pz-omi-lib/main/bundler.schema.json",
+  "$id": "https://raw.githubusercontent.com/omarkmu/pz-omilibrary/main/bundler.schema.json",
   "type": "object",
   "properties": {
     "name": {

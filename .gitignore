@@ -1,5 +1,5 @@
 .vscode/
-src/OmiLib.lua
+src/OmiLibrary.lua
 bundle.lua
 bundler/node_modules/
 bundler/index.cjs
