@@ -1,0 +1,94 @@
+{
+  "$id": "https://raw.githubusercontent.com/omarkmu/pz-omi-lib/main/bundler.schema.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[_a-zA-Z][_\\w]*$",
+      "description": "The name of the library. Used in default definitions. Must be a valid Lua identifier."
+    },
+    "version": {
+      "type": "string",
+      "description": "The library version. This will be included as `LIB_NAME.VERSION = LIB_VERSION`, unless `definition` is specified."
+    },
+    "luaDirectory": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "The directory in which Lua files will be discovered. Defaults to the path of the library JSON file."
+    },
+    "outFile": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "The path to the output Lua file relative to the library JSON file. An output path provided as a command-line argument takes precedence over this."
+    },
+    "defaultModules": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "Default modules to include in the bundle when none are specified."
+    },
+    "header": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "Content to include at the top of the bundle file."
+    },
+    "definition": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "The Lua definition of the library. Defaults to `local LIB_NAME = {}`."
+    },
+    "before": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "Content to insert on the line directly before the library definition."
+    },
+    "after": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "Content to insert on the line directly after the library definition."
+    },
+    "return": {
+      "$ref": "#/$defs/stringOrArray",
+      "description": "The Lua return line of the library. Defaults to `return LIB_NAME`."
+    },
+    "modules": {
+      "type": "object",
+      "description": "A mapping of module names to module definitions.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "require": {
+            "type": "string",
+            "description": "The Lua path to require as the definition of this module. Requires will have the form `LIB_NAME.MOD_NAME = require 'MOD_REQUIRE'`. If `body` is specified, this is ignored."
+          },
+          "body": {
+            "$ref": "#/$defs/stringOrArray",
+            "description": "The main content of the module definitions. Mutually exclusive with and takes precedence over `require`."
+          },
+          "before": {
+            "$ref": "#/$defs/stringOrArray",
+            "description": "Content to insert on the line directly before the module body."
+          },
+          "after": {
+            "$ref": "#/$defs/stringOrArray",
+            "description": "Content to insert on the line directly after the module body."
+          }
+        },
+        "oneOf": [
+          {
+            "required": ["require"]
+          },
+          {
+            "required": ["body"]
+          }
+        ]
+      }
+    }
+  },
+  "required": ["name"],
+  "$defs": {
+    "stringOrArray": {
+      "anyOf": [
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  }
+}
