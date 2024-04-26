@@ -242,7 +242,7 @@ end
 
 ---Performs string interpolation.
 ---@param tokens table? Interpolation tokens. If excluded, the current tokens will be unchanged.
----@return string
+---@return unknown
 function Interpolator:interpolateRaw(tokens)
     if tokens then
         self._tokens = tokens
