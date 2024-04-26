@@ -1,3 +1,7 @@
+# 3.1.1
+- Renamed return table to `OmiLibrary`
+- Fixed the return type of `omi.interpolate.Interpolator.interpolateRaw`
+
 # 3.1.0
 - Added `DelimitedList` utility class
 
