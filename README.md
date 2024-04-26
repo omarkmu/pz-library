@@ -1,5 +1,4 @@
 # OmiLib
-
 OmiLib is a Lua utility library created with [Project Zomboid](https://projectzomboid.com) modding in mind.
 The following modules are available:
 
@@ -12,17 +11,22 @@ The following modules are available:
 | utils         | Common utility functions                  |
 | DelimitedList | Manage delimited string lists             |
 
-This library is meant to be be bundled into a single file using [luabun](https://github.com/omarkmu/luabun).
+## Installation
+Installation requires `npm`.
+To build the bundler, run the `build` script in the [scripts](./scripts/) folder.
+
+## Creating a Bundle
+Creating a bundle requires `node`.
 
 By default, only the `class`, `sandbox`, and `utils` modules are included.
 To build the entire library, use:
 
 ```
-node luabun OmiLib --all -o OmiLib.lua
+scripts/bundle --all -o OmiLib.lua
 ```
 
-To build with specific modules, use:
+To build a bundle including a subset of the modules, use:
 
 ```
-node luabun OmiLib --modules utils fmt -o OmiLib.lua
+scripts/bundle --modules utils fmt -o OmiLib.lua
 ```
