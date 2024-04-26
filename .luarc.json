@@ -4,6 +4,9 @@
     "workspace.checkThirdParty": false,
     "workspace.useGitIgnore": true,
     "diagnostics.libraryFiles": "Disable",
+    "workspace.ignoreDir": [
+        "bundler"
+    ],
     "diagnostics.disable": [
         "spell-check",
         "name-style-check",
