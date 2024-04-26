@@ -20,16 +20,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.head_ref || github.ref }}
         path: OmiLib
-    - name: Checkout luabun
-      uses: actions/checkout@v4
-      with:
-        path: luabun
-        repository: omarkmu/luabun
-    - name: Install luabun
-      run: cd luabun && npm i && cd ..
+    - name: Build bundler
+      run: ./OmiLib/scripts/build.sh
     - name: Build bundle
-      run: node luabun create OmiLib --all
+      run: ./OmiLib/scripts/bundle.sh --all
   test:
     runs-on: ubuntu-latest
     steps:
